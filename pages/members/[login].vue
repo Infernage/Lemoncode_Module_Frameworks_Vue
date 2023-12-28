@@ -1,44 +1,82 @@
 <template>
-  <div>
-    <NuxtLink to="/">Back to home</NuxtLink>
-    <h1>{{username}} Details</h1>
-    <div v-if="member">
-      <h2>Avatar</h2>
-      <img :src="member.avatar_url" alt="Avatar" width="200" height="200" />
-      <h2>Id</h2>
-      <span>{{member.id}}</span>
-      <h2>Name</h2>
-      <span>{{member.name}}</span>
-      <h2>Company</h2>
-      <span>{{member.company ?? 'N/A'}}</span>
-      <h2>Location</h2>
-      <span>{{member.location ?? 'N/A'}}</span>
-      <h2>Public repositories</h2>
-      <span>{{member.public_repos}}</span>
-      <h2>Public gists</h2>
-      <span>{{member.public_gists}}</span>
-      <h2>Number of followers</h2>
-      <span>{{member.followers}}</span>
-      <h2>Number of following</h2>
-      <span>{{member.following}}</span>
-    </div>
-    <div v-else-if="error">
-      {{error.name}}
-    </div>
-  </div>
+  <article>
+    <v-btn block="true" variant="tonal" to="/">Back to home</v-btn>
+    <v-card v-if="member">
+      <v-container fluid="true">
+        <v-row>
+          <v-col>
+            <v-card height="100%">
+              <v-img :src="member.avatar_url" cover="true" />
+              <v-tooltip text="Name">
+                <template v-slot:activator="{ props }">
+                  <v-card-title
+                    v-bind="props"
+                    v-text="member.name"
+                  ></v-card-title>
+                </template>
+              </v-tooltip>
+              <v-tooltip text="Login">
+                <template v-slot:activator="{ props }">
+                  <v-card-subtitle v-bind="props">{{
+                    member.login
+                  }}</v-card-subtitle>
+                </template>
+              </v-tooltip>
+            </v-card>
+          </v-col>
+          <v-col>
+            <v-expansion-panels variant="accordion" mandatory="force">
+              <v-expansion-panel
+                title="Id"
+                :text="member.id.toString()"
+              ></v-expansion-panel>
+              <v-expansion-panel
+                title="Company"
+                :text="member.company ?? 'N/A'"
+              ></v-expansion-panel>
+              <v-expansion-panel
+                title="Location"
+                :text="member.location ?? 'N/A'"
+              ></v-expansion-panel>
+              <v-expansion-panel
+                title="Public repositories"
+                :text="member.public_repos?.toString() ?? '0'"
+              ></v-expansion-panel>
+              <v-expansion-panel
+                title="Public gists"
+                :text="member.public_gists?.toString() ?? '0'"
+              ></v-expansion-panel>
+              <v-expansion-panel
+                title="Number of followers"
+                :text="member.followers?.toString() ?? '0'"
+              ></v-expansion-panel>
+              <v-expansion-panel
+                title="Number of following"
+                :text="member.following?.toString() ?? '0'"
+              ></v-expansion-panel>
+            </v-expansion-panels>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card>
+    <span v-else-if="error">
+      {{ error.name }}
+    </span>
+  </article>
 </template>
 
 <script async setup lang="ts">
-import { ref } from 'vue';
-import {useFetch, useRoute} from "#app";
-import type {TDetailedMember} from "~/types/member";
+import { ref } from "vue";
+import { useFetch, useRoute } from "#app";
+import type { TDetailedMember } from "~/types/member";
 
 const route = useRoute();
-const username = ref(route.params.login ?? '');
+const username = ref(route.params.login ?? "");
 const member = ref<TDetailedMember | null>();
 
-const {data, error} = await useFetch<TDetailedMember, Error>(() => `https://api.github.com/users/${username.value}`);
+const { data, error } = await useFetch<TDetailedMember, Error>(
+  () => `https://api.github.com/users/${username.value}`,
+);
 
 member.value = data.value;
-
 </script>
