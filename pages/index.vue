@@ -8,13 +8,20 @@
     </div>
     <div v-if="pending">Loading...</div>
     <div v-else-if="error">Error</div>
-    <ul v-else>
-      <li v-for="member in members" :key="member.id">
-        <img :src="member.avatar_url" />
-        <span>{{member.id}}</span>
-        <span>{{member.login}}</span>
-      </li>
-    </ul>
+    <table v-else>
+      <tr>
+        <th>Avatar</th>
+        <th>Id</th>
+        <th>Name</th>
+      </tr>
+      <tr v-for="member in members" :key="member.id">
+        <NuxtLink :to="`/members/${member.login}`">
+          <td><img :src="member.avatar_url" alt="Avatar" width="200" height="200"/></td>
+          <td>{{member.id}}</td>
+          <td>{{member.login}}</td>
+        </NuxtLink>
+      </tr>
+    </table>
     <div>
       <button @click="changePage(-1)" :disabled="currentPage <= 1">Previous</button>
       <span>Page {{ currentPage }}</span>
